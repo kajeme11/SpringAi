@@ -15,11 +15,16 @@ public class GenAiController {
 
     private final ChatService chatService;
     private final ImageService imageService;
+    private final RecipeService recipeService;
 
-    public GenAiController(ChatService chatService, ImageService imageService){
+    public GenAiController(ChatService chatService,
+                           ImageService imageService,
+                           RecipeService recipeService){
 
         this.chatService = chatService;
         this.imageService = imageService;
+        this.recipeService = recipeService;
+
     }
 
     @GetMapping("ask-ai")
@@ -39,7 +44,7 @@ public class GenAiController {
 //        String imageUrl =  imageResponse.getResult().getOutput().getUrl();
 //        httpServletResponse.sendRedirect(imageUrl);
 //    }
-
+//http://localhost:8080/ask-ai-images?prompt=rockstar%20cat
     @GetMapping("ask-ai-images")
     public List<String> generateImages(HttpServletResponse httpServletResponse,  @RequestParam String prompt) throws IOException {
         ImageResponse imageResponse = imageService.generateImage(prompt);
@@ -47,5 +52,14 @@ public class GenAiController {
                 .stream().map(result -> result.getOutput().getUrl()).toList();
         return imageUrls;
 
+    }
+
+//    http://localhost:8080/ai-recipe?ingredients=chicken, carrots, pototoes, jalapenos&cuisine="mexican"&restrictions="seafood allergy"
+    @GetMapping("ai-recipe")
+    public String generateImage(@RequestParam String ingredients,
+                                @RequestParam(defaultValue = "any") String cuisine,
+                                @RequestParam(defaultValue = "") String restrictions){
+
+        return recipeService.createRecipe(ingredients, cuisine, restrictions);
     }
 }
